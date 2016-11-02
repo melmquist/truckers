@@ -21,39 +21,3 @@ const db = module.exports = new Sequelize(url, {
     timestamps: true,        // automatically include timestamp columns
   }
 })
-
-// pull in our models
-const models = require('./models');
-
-const User = models.User;
-const Order = models.Order;
-const MenuItem = models.MenuItem;
-const FoodTruck = models.FoodTruck;
-
-// sync the db, creating it if necessary
-function sync(force=app.isTesting) {
-
-  const userCreate = User.bulkCreate(users);
-  const foodTruckCreate = FoodTruck.bulkCreate(foodTrucks);
-  const orderCreate = Order.bulkCreate(orders);
-  const menuItemCreate = MenuItem.bulkCreate(menuItems);
-
-  return db.sync({force})
-    .them(() => {
-      return Promise.all([userCreate, foodTruckCreate, orderCreate, menuItemCreate])
-    })
-    .then(ok => console.log(`Synced models to db ${url}`))
-    .catch(fail => {
-      // if (app.isProduction) {
-        console.error(fail)
-      //   return // Don't do this auto-create nonsense in prod
-      // }
-      // Otherwise, do this autocreate nonsense
-      // console.log(`Creating database ${name}...`)
-      // return new Promise((resolve, reject) =>
-      //   require('child_process').exec(`createdb "${name}"`, resolve)
-      // ).then(() => sync(true))
-    })
-}
-
-db.didSync = sync()
